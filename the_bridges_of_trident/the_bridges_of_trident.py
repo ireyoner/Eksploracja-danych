@@ -4,9 +4,9 @@ import Orange
 
 def simple_instances(data, indexes=[5,7,40]):
     # przykładowe instancje
-    print data
     for x in indexes:
-        print x, ":", data[x]
+        if x <= len(data):
+            print x, ":", data[x]
 
 def class_variable(data):
     # listę wartości zmiennej celu i histogram zmiennej celu
@@ -16,27 +16,27 @@ def class_variable(data):
     import matplotlib.pyplot as plt
     import pylab as plb
 
-    if data.domain.classVar:
-        items = Counter([d[data.domain.classVar].value for d in data if not d[data.domain.classVar].is_special()])
-        print "Class variable values and counts:"
-        print data.domain.classVar.name
-        for item in items.items():
-            print "%-21s  : %4d" % item
 
-        # generacja histogramu za pomocą matplotlib
-        cm = plb.get_cmap('gist_rainbow')
+    items = Counter([d[data.domain.attributes[-1]].value for d in data if not d[data.domain.attributes[-1]].is_special()])
+    print "Class variable values and counts:"
+    print data.domain.attributes[-1].name
+    for item in items.items():
+        print "%-21s  : %4d" % item
 
-        for index, item in enumerate(items):
-            plt.bar(index+.1, item[1], label=item[0], color=cm(1.*index/len(items)))
+    # generacja histogramu za pomocą matplotlib
+    cm = plb.get_cmap('gist_rainbow')
 
-        plt.xlabel('Group')
-        plt.ylabel('Bridges')
-        plt.axes().get_xaxis().set_visible(False)
-        plt.title('Bridges by '+data.domain.classVar.name)
-        plt.legend()
+    for index, item in enumerate(items):
+        plt.bar(index+.1, item[1], label=item[0], color=cm(1.*index/len(items)))
 
-        plt.tight_layout()
-        plt.show()
+    plt.xlabel('Group')
+    plt.ylabel('Bridges')
+    plt.axes().get_xaxis().set_visible(False)
+    plt.title('Bridges by '+data.domain.classVar.name)
+    plt.legend()
+
+    plt.tight_layout()
+    plt.show()
 
 
 def attributes_names_and_types(data):
@@ -79,7 +79,6 @@ def small_instance_simple(data, procent = 10):
 
 def bridges_functions():
     data = Orange.data.Table("bridges")
-    data.domain.classVar = data.domain.attributes[-1]
     functions = [
                     simple_instances
                     ,
